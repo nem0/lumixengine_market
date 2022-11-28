@@ -1,20 +1,26 @@
 {
     {
-        name = "Animated characters",
+        name = "Animated Characters 3",
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/animated-characters.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/animated-characters.png",
     },
     {
-        name = "Survival kit",
+        name = "Survival Kit",
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/survival_kit.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/survival_kit.png",
     },
     {
-        name = "Tower defense kit",
+        name = "Tower Defense Kit",
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.png",
+    },
+    {
+        name = "Ultimate Stylized Nature",
+        category = "Model",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.png",
     }
 }
