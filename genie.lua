@@ -1,4 +1,4 @@
-project "myplugin"
+project "market"
 	libType()
 	files { 
 		"src/**.c",
@@ -6,9 +6,9 @@ project "myplugin"
 		"src/**.h",
 		"genie.lua"
 	}
-	defines { "BUILDING_MYPLUGIN" }
+	defines { "BUILDING_MARKET" }
 	links { "engine" }
 	useLua()
 	defaultConfigurations()
 
-linkPlugin("myplugin")
+linkPlugin("market")
