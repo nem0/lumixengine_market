@@ -14,7 +14,7 @@
     {
         name = "Tower defense kit",
         category = "Model",
-        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/survival_kit.zip",
-        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/survival_kit.png",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.png",
     }
 }
