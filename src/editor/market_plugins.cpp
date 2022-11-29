@@ -77,7 +77,7 @@ struct DownloadThread : Thread {
 	
 	static bool download(const char* url, OutputMemoryStream& blob, bool use_cache, FileSystem& fs) {
 		const StableHash url_hash(url);
-		const StaticString<128> cache_path(".market_cache/", url_hash.getHashValue(), ".", Path::getExtension(Span(url, stringLength(url))));
+		const StaticString<128> cache_path(".lumix/.market_cache/", url_hash.getHashValue(), ".", Path::getExtension(Span(url, stringLength(url))));
 		if (use_cache) {
 			if (fs.fileExists(cache_path)) {
 				return fs.getContentSync(Path(cache_path), blob);
@@ -211,8 +211,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_toggle_ui.is_selected.bind<&MarketPlugin::isOpen>(this);
 
 		const char* base_path = m_app.getEngine().getFileSystem().getBasePath();
-		if (!os::makePath(StaticString<LUMIX_MAX_PATH>(base_path, "/.market_cache"))) {
-			logError("Failed to create .market_cache");
+		if (!os::makePath(StaticString<LUMIX_MAX_PATH>(base_path, "/.lumix/.market_cache"))) {
+			logError("Failed to create .lumix/.market_cache");
 		}
 		getList(false);
 
@@ -231,7 +231,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		if (force) {
 			FileSystem& fs = m_app.getEngine().getFileSystem();
 			const StableHash url_hash(LIST_URL);
-			fs.deleteFile(StaticString<LUMIX_MAX_PATH>(".market_cache/", url_hash.getHashValue(), ".lua"));
+			fs.deleteFile(StaticString<LUMIX_MAX_PATH>(".lumix/.market_cache/", url_hash.getHashValue(), ".lua"));
 		}
 		m_download_thread.cancelAll();
 		m_items.clear();
