@@ -18,6 +18,12 @@
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.png",
     },
     {
+        name = "Racing kit",
+        category = "Model",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/racing_kit.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/racing_kit.png",
+    },
+    {
         name = "Ultimate Stylized Nature",
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.zip",
