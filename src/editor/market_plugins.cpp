@@ -346,7 +346,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			const u32 to_do = m_download_thread.m_to_do_count;
 			if (to_do > 0) {
 				m_total_jobs = maximum(m_total_jobs, to_do);
-				ImGui::ProgressBar(to_do / (float)m_total_jobs);
+				ImGui::ProgressBar(1 - to_do / (float)m_total_jobs);
 			}
 			else {
 				m_total_jobs = 0;
@@ -382,7 +382,10 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				ImGui::PushID(&item);
 				ImVec2 img_size(256, 256);
 				ImVec2 tl = ImGui::GetCursorPos();
-				ImGui::Image(item.texture, img_size);
+				if (item.texture) 
+					ImGui::Image(item.texture, img_size);
+				else 
+					ImGuiEx::Rect(img_size.x, img_size.y, 0);
 				ImVec2 text_size = ImGui::CalcTextSize(item.name.c_str());
 				ImVec2 pos = ImGui::GetCursorPos();
 				pos.x += (256 - text_size.x) * 0.5f;
