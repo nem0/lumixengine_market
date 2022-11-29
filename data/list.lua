@@ -28,6 +28,12 @@
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.png",
+    },
+    {
+        name = "Platformer pack",
+        category = "Model",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.png",
     }
     
 }
