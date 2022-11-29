@@ -352,8 +352,11 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				m_total_jobs = 0;
 			}
 			if (ImGui::Button("Refresh")) getList(true);
+			ImGui::SameLine();
+			if (ImGuiEx::IconButton(ICON_FA_TIMES, "Clear filter")) m_filter[0] = '\0';
+			ImGui::SameLine();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::InputTextWithHint("##filter", "Filter", m_filter, sizeof(m_filter));
+			ImGui::InputTextWithHint("##filter", "Filter", m_filter, sizeof(m_filter), ImGuiInputTextFlags_AutoSelectAll);
 			FileSystem& fs =  m_app.getEngine().getFileSystem();		
 			const float width = ImGui::GetContentRegionAvail().x;
 			u32 columns = maximum(1, u32((width + 128) / 256));
