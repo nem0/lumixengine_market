@@ -173,31 +173,40 @@ static bool extract(Span<const u8> zip, const char* export_dir, FileSystem& fs, 
 	if (!mz_zip_reader_init_mem(&archive, zip.begin(), zip.length(), 0)) return false;
 
 	const mz_uint count = mz_zip_reader_get_num_files(&archive);
+	bool res = true;
 	for (u32 i = 0; i < count; ++i) {
 		mz_zip_archive_file_stat stat;
 		if (!mz_zip_reader_file_stat(&archive, i, &stat)) {
 			mz_zip_reader_end(&archive);
 			return false;
 		}
-		OutputMemoryStream blob(allocator);
-		auto callback = [](void *pOpaque, mz_uint64 file_ofs, const void *pBuf, size_t n) -> size_t {
-			OutputMemoryStream* blob = (OutputMemoryStream*)pOpaque;
-			blob->write(pBuf, n);
-			return n;
-		};
-		if (!mz_zip_reader_extract_to_callback(&archive, i, callback, &blob, 0)) {
-			mz_zip_reader_end(&archive);
-			return false;
+		if (stat.m_is_directory) {
+			StaticString<LUMIX_MAX_PATH> path(fs.getBasePath(), export_dir, "/", stat.m_filename);
+			if (!os::makePath(path)) {
+				logError("Failed to create ", path);
+				res = false;
+			}
 		}
-		StaticString<LUMIX_MAX_PATH> out_path(export_dir, "/", stat.m_filename);
-		if (!fs.saveContentSync(Path(out_path), blob)) {
-			logError("Failed to write ", out_path);
-			mz_zip_reader_end(&archive);
-			return false;
+		else {
+			OutputMemoryStream blob(allocator);
+			auto callback = [](void *pOpaque, mz_uint64 file_ofs, const void *pBuf, size_t n) -> size_t {
+				OutputMemoryStream* blob = (OutputMemoryStream*)pOpaque;
+				blob->write(pBuf, n);
+				return n;
+			};
+			if (!mz_zip_reader_extract_to_callback(&archive, i, callback, &blob, 0)) {
+				logError("Failed to extract ", stat.m_filename);
+				res = false;
+			}
+			StaticString<LUMIX_MAX_PATH> out_path(export_dir, "/", stat.m_filename);
+			if (!fs.saveContentSync(Path(out_path), blob)) {
+				logError("Failed to write ", out_path);
+				res = false;
+			}
 		}
 	}
 	mz_zip_reader_end(&archive);
-	return true;
+	return res;
 }
 
 struct MarketPlugin : StudioApp::GUIPlugin {
