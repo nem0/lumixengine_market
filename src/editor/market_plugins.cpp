@@ -221,6 +221,10 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	}
 
 	~MarketPlugin() {
+		m_download_thread.cancelAll();
+		m_download_thread.m_finished = true;
+		m_download_thread.m_semaphore.signal();
+		m_download_thread.destroy();
 		m_app.removeAction(&m_toggle_ui);
 	}
 
