@@ -46,5 +46,12 @@
         category = "Model",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.png",
+    },
+    {
+        name = "Vehicle Sample",
+        category = "Universe",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.png",
     }
+
 }
