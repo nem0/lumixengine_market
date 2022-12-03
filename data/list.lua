@@ -53,5 +53,12 @@
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.png",
         root_install = true
+    },
+    {
+        name = "Portal effect",
+        tags = "scene, model, shader, material",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.png",
+        root_install = true
     }
 }
