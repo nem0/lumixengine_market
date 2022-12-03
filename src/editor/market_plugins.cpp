@@ -264,15 +264,20 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				lua_rawgeti(L, -1, i + 1);
 				char tmp[LUMIX_MAX_PATH];
 				#define CHECK(N) \
-					do {\
-						if (!LuaWrapper::checkStringField(L, -1, #N, Span(tmp))) luaL_error(L, "missing " #N); \
-						item.N = tmp; \
-					} while (false)
+					if (!LuaWrapper::checkStringField(L, -1, #N, Span(tmp))) { \
+						logError("Missing " #N " in market list in item ", i); \
+						m_items.pop(); \
+						lua_pop(L, 1); \
+						continue; \
+					} \
+					item.N = tmp; \
 	
 				CHECK(name);
-				CHECK(category);
+				CHECK(tags);
 				CHECK(path);
 				CHECK(thumbnail);
+
+				LuaWrapper::getOptionalField(L, -1, "root_install", &item.root_install);
 				LuaWrapper::getOptionalField(L, -1, "version", &item.version);
 	
 				#undef CHECK
@@ -285,16 +290,17 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	struct MarketItem {
 		MarketItem(IAllocator& allocator)
 			: name(allocator)
-			, category(allocator)
+			, tags(allocator)
 			, path(allocator)
 			, thumbnail(allocator)
 		{}
 
 		String name;
-		String category;
+		String tags;
 		String path;
 		String thumbnail;
 		u32 version = 0;
+		bool root_install = false;
 		bool download_tried = false;
 
 		ImTextureID texture = nullptr;
@@ -324,6 +330,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 					logError("Failed to save ", item.path.c_str(), " as ", install_path_str);
 				}
 			}
+			m_app.scanUniverses();
 		});
 	}
 
@@ -407,8 +414,13 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				
 				ImGui::SetCursorPos(tl);
 				if (ImGuiEx::IconButton(ICON_FA_DOWNLOAD, "Download & Install")) {
-					m_show_install_path = true;
-					m_item_to_install = i32(&item - m_items.begin());
+					if (item.root_install) {
+						install(item, "");
+					}
+					else {
+						m_show_install_path = true;
+						m_item_to_install = i32(&item - m_items.begin());
+					}
 				}
 
 				ImGui::PopID();
