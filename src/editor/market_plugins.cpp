@@ -383,7 +383,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			
 			u32 i = 0;
 			for (MarketItem& item : m_items) {
-				if (m_filter[0] && stristr(item.name.c_str(), m_filter) == nullptr) continue;
+				if (m_filter[0] && stristr(item.name.c_str(), m_filter) == nullptr && stristr(item.tags.c_str(), m_filter) == nullptr) continue;
 				if (!item.texture && !item.download_tried) {
 					item.download_tried = true;
 					m_download_thread.download(item.thumbnail.c_str(), [this, &item](const OutputMemoryStream& blob){
