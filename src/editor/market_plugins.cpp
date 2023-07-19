@@ -356,7 +356,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		}
 	}
 
-	void onWindowGUI() override {
+	void onGUI() override {
 		processFinishedJobs();
 		if (!m_is_open) return;
 
