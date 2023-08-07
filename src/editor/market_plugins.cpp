@@ -11,6 +11,7 @@
 #include "engine/lua_wrapper.h"
 #include "engine/os.h"
 #include "engine/path.h"
+#include "engine/profiler.h"
 #include "engine/stream.h"
 #include "engine/string.h"
 #include "engine/sync.h"
@@ -54,6 +55,7 @@ struct DownloadThread : Thread {
 	{}
 
 	int task() override {
+		PROFILE_FUNCTION();
 		while(!m_finished) {
 			m_semaphore.wait();
 			m_mutex.enter();
@@ -77,7 +79,7 @@ struct DownloadThread : Thread {
 	
 	static bool download(const char* url, OutputMemoryStream& blob, bool use_cache, FileSystem& fs) {
 		const StableHash url_hash(url);
-		const StaticString<128> cache_path(".lumix/.market_cache/", url_hash.getHashValue(), ".", Path::getExtension(Span(url, stringLength(url))));
+		const StaticString<128> cache_path(".lumix/.market_cache/", url_hash.getHashValue(), ".", Path::getExtension(url));
 		if (use_cache) {
 			if (fs.fileExists(cache_path)) {
 				return fs.getContentSync(Path(cache_path), blob);
@@ -253,7 +255,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			OutputMemoryStream tmp_blob(m_app.getAllocator());
 			tmp_blob << "return ";
 			tmp_blob.write(blob.data(), blob.size());
-			if (!LuaWrapper::execute(L, Span((const char*)tmp_blob.data(), (u32)tmp_blob.size()), "market list", 1)) {
+			if (!LuaWrapper::execute(L, StringView((const char*)tmp_blob.data(), (u32)tmp_blob.size()), "market list", 1)) {
 				logError("Failed to parse market list");
 				return;
 			}
@@ -446,8 +448,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	DownloadThread m_download_thread;
 };
 
-LUMIX_STUDIO_ENTRY(market)
-{
+LUMIX_STUDIO_ENTRY(market) {
+	PROFILE_FUNCTION();
 	WorldEditor& editor = app.getWorldEditor();
 
 	auto* plugin = LUMIX_NEW(editor.getAllocator(), MarketPlugin)(app);
