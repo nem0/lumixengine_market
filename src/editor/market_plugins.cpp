@@ -183,7 +183,7 @@ static bool extract(Span<const u8> zip, const char* export_dir, FileSystem& fs, 
 			return false;
 		}
 		if (stat.m_is_directory) {
-			StaticString<LUMIX_MAX_PATH> path(fs.getBasePath(), export_dir, "/", stat.m_filename);
+			StaticString<MAX_PATH> path(fs.getBasePath(), export_dir, "/", stat.m_filename);
 			if (!os::makePath(path)) {
 				logError("Failed to create ", path);
 				res = false;
@@ -200,7 +200,7 @@ static bool extract(Span<const u8> zip, const char* export_dir, FileSystem& fs, 
 				logError("Failed to extract ", stat.m_filename);
 				res = false;
 			}
-			StaticString<LUMIX_MAX_PATH> out_path(export_dir, "/", stat.m_filename);
+			StaticString<MAX_PATH> out_path(export_dir, "/", stat.m_filename);
 			if (!fs.saveContentSync(Path(out_path), blob)) {
 				logError("Failed to write ", out_path);
 				res = false;
@@ -222,7 +222,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_toggle_ui.is_selected.bind<&MarketPlugin::isOpen>(this);
 
 		const char* base_path = m_app.getEngine().getFileSystem().getBasePath();
-		if (!os::makePath(StaticString<LUMIX_MAX_PATH>(base_path, "/.lumix/.market_cache"))) {
+		if (!os::makePath(StaticString<MAX_PATH>(base_path, "/.lumix/.market_cache"))) {
 			logError("Failed to create .lumix/.market_cache");
 		}
 		getList(false);
@@ -246,7 +246,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		if (force) {
 			FileSystem& fs = m_app.getEngine().getFileSystem();
 			const StableHash url_hash(LIST_URL);
-			fs.deleteFile(StaticString<LUMIX_MAX_PATH>(".lumix/.market_cache/", url_hash.getHashValue(), ".lua"));
+			fs.deleteFile(StaticString<MAX_PATH>(".lumix/.market_cache/", url_hash.getHashValue(), ".lua"));
 		}
 		m_download_thread.cancelAll();
 		m_items.clear();
@@ -264,7 +264,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			for (int i = 0; i < n; ++i) {
 				MarketItem& item = m_items.emplace(m_app.getAllocator());
 				lua_rawgeti(L, -1, i + 1);
-				char tmp[LUMIX_MAX_PATH];
+				char tmp[MAX_PATH];
 				#define CHECK(N) \
 					if (!LuaWrapper::checkStringField(L, -1, #N, Span(tmp))) { \
 						logError("Missing " #N " in market list in item ", i); \
@@ -310,7 +310,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 	void makePath(const char* path) {
 		FileSystem& fs = m_app.getEngine().getFileSystem();
-		StaticString<LUMIX_MAX_PATH> fullpath(fs.getBasePath(), "/", path);
+		StaticString<MAX_PATH> fullpath(fs.getBasePath(), "/", path);
 		if (!os::makePath(fullpath)) {
 			logError("Failed to create ", fullpath);
 		}
@@ -318,7 +318,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 	void install(const MarketItem& item, const char* install_path) {
 		FileSystem& fs =  m_app.getEngine().getFileSystem();
-		StaticString<LUMIX_MAX_PATH> install_path_str = install_path;
+		StaticString<MAX_PATH> install_path_str = install_path;
 		m_download_thread.download(item.path.c_str(), [this, item, install_path_str](const OutputMemoryStream& blob){
 			FileSystem& fs = m_app.getEngine().getFileSystem();
 			if (Path::hasExtension(item.path.c_str(), "zip")) {
@@ -385,7 +385,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			
 			u32 i = 0;
 			for (MarketItem& item : m_items) {
-				if (m_filter[0] && stristr(item.name.c_str(), m_filter) == nullptr && stristr(item.tags.c_str(), m_filter) == nullptr) continue;
+				if (m_filter[0] && findInsensitive(item.name.c_str(), m_filter) == nullptr && findInsensitive(item.tags.c_str(), m_filter) == nullptr) continue;
 				if (!item.texture && !item.download_tried) {
 					item.download_tried = true;
 					m_download_thread.download(item.thumbnail.c_str(), [this, &item](const OutputMemoryStream& blob){
