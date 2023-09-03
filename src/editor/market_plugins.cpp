@@ -16,9 +16,9 @@
 #include "engine/string.h"
 #include "engine/sync.h"
 #include "engine/thread.h"
-#include "openfbx/miniz.h"
 
 #include "imgui/imgui.h"
+#include "miniz.h"
 #include "stb/stb_image.h"
 
 #include <urlmon.h>
