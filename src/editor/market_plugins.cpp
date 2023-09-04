@@ -217,7 +217,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		, m_items(app.getAllocator())
 		, m_download_thread(app, app.getAllocator())
 	{
-		m_toggle_ui.init("Marketplace", "Toggle marketplace UI", "marketplace", "", false);
+		m_toggle_ui.init("Marketplace", "Toggle marketplace UI", "marketplace", "", Action::IMGUI_PRIORITY);
 		m_toggle_ui.func.bind<&MarketPlugin::toggleUI>(this);
 		m_toggle_ui.is_selected.bind<&MarketPlugin::isOpen>(this);
 
