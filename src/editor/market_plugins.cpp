@@ -332,7 +332,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 					logError("Failed to save ", item.path.c_str(), " as ", install_path_str);
 				}
 			}
-			m_app.scanWorlds();
 		});
 	}
 
