@@ -18,6 +18,12 @@
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/tower_defense_kit.png",
     },
     {
+        name = "Mini skate",
+        tags = "model, lowpoly",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/mini_skate.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/mini_skate.png",
+    },
+    {
         name = "Racing Kit",
         tags = "model, lowpoly",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/racing_kit.zip",
