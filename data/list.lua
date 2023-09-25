@@ -1,4 +1,4 @@
-{
+return {
     {
 		name = "Animated characters 1",
 		tags = "model, lowpoly, animation",
