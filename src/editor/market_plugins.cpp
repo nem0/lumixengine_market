@@ -217,6 +217,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		, m_items(app.getAllocator())
 		, m_download_thread(app, app.getAllocator())
 	{
+		createLuaAPI();
 		m_toggle_ui.init("Marketplace", "Toggle marketplace UI", "marketplace", "", Action::IMGUI_PRIORITY);
 		m_toggle_ui.func.bind<&MarketPlugin::toggleUI>(this);
 		m_toggle_ui.is_selected.bind<&MarketPlugin::isOpen>(this);
@@ -239,6 +240,61 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_app.removeAction(&m_toggle_ui);
 	}
 
+	static int LUA_nextFile(lua_State* L) {
+		os::FileIterator* iter = LuaWrapper::checkArg<os::FileIterator*>(L, 1);
+		os::FileInfo info;
+		if (!os::getNextFile(iter, &info)) return 0;
+
+		LuaWrapper::push(L, info.is_directory);
+		LuaWrapper::push(L, info.filename);
+		return 2;
+	}
+
+	static int LUA_createFileIterator(lua_State* L) {
+		const char* dir = LuaWrapper::checkArg<const char*>(L, 1);
+		int upvalue_index = lua_upvalueindex(1);
+		if (!LuaWrapper::isType<MarketPlugin*>(L, upvalue_index)) {
+			ASSERT(false);
+			luaL_error(L, "Invalid Lua closure");
+		}
+		MarketPlugin* plugin = LuaWrapper::checkArg<MarketPlugin*>(L, upvalue_index);
+
+		StaticString<MAX_PATH> path(plugin->m_app.getEngine().getFileSystem().getBasePath(), dir);
+		LuaWrapper::push(L, os::createFileIterator(path, plugin->m_app.getAllocator()));
+		return 1;
+	}
+
+	static int LUA_downloadAndExtract(lua_State* L) {
+		int upvalue_index = lua_upvalueindex(1);
+		if (!LuaWrapper::isType<MarketPlugin*>(L, upvalue_index)) {
+			ASSERT(false);
+			luaL_error(L, "Invalid Lua closure");
+		}
+		MarketPlugin* plugin = LuaWrapper::checkArg<MarketPlugin*>(L, upvalue_index);
+
+		const char* url = LuaWrapper::checkArg<const char*>(L, 1);
+		StaticString<MAX_PATH> dir = LuaWrapper::checkArg<const char*>(L, 2);
+
+		plugin->m_download_thread.download(url, [L, dir, plugin](OutputMemoryStream& blob){
+			plugin->makePath(dir);
+			bool res = extract(blob, dir, plugin->m_app.getEngine().getFileSystem(), plugin->m_app.getAllocator());
+			lua_pushboolean(L, res);
+			int status = lua_resume(L, nullptr, 1);
+			if (status != LUA_YIELD && status != LUA_OK) {
+				logError(lua_tostring(L, -1));
+			}
+		});
+		return lua_yield(L, 1);
+	}
+
+	void createLuaAPI() {
+		m_state = lua_newthread(m_app.getEngine().getState());
+		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "downloadAndExtract", &LUA_downloadAndExtract);
+		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "createFileIterator", &LUA_createFileIterator);
+		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "destroyFileIterator", &LuaWrapper::wrap<&os::destroyFileIterator>);
+		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "nextFile", &LUA_nextFile);
+	}
+
 	void toggleUI() { m_is_open = !m_is_open; }
 	bool isOpen() const { return m_is_open; }
 
@@ -251,15 +307,15 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_download_thread.cancelAll();
 		m_items.clear();
 		m_download_thread.download(LIST_URL, [&](const OutputMemoryStream& blob){
-			lua_State* L = luaL_newstate();
-			OutputMemoryStream tmp_blob(m_app.getAllocator());
-			tmp_blob << "return ";
-			tmp_blob.write(blob.data(), blob.size());
-			if (!LuaWrapper::execute(L, StringView((const char*)tmp_blob.data(), (u32)tmp_blob.size()), "market list", 1)) {
+			lua_State* L = m_state;
+			if (!LuaWrapper::execute(L, StringView((const char*)blob.data(), (u32)blob.size()), "market list", 1)) {
 				logError("Failed to parse market list");
 				return;
 			}
-	
+
+			// TODO leak
+			m_list_ref = LuaWrapper::createRef(L);
+
 			const int n = (int)lua_objlen(L, -1);
 			for (int i = 0; i < n; ++i) {
 				MarketItem& item = m_items.emplace(m_app.getAllocator());
@@ -276,8 +332,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	
 				CHECK(name);
 				CHECK(tags);
-				CHECK(path);
 				CHECK(thumbnail);
+				item.index = i;
 
 				LuaWrapper::getOptionalField(L, -1, "root_install", &item.root_install);
 				LuaWrapper::getOptionalField(L, -1, "version", &item.version);
@@ -285,7 +341,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				#undef CHECK
 				lua_pop(L, 1);
 			}
-			lua_close(L);
 		});
 	}
 		
@@ -293,14 +348,13 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		MarketItem(IAllocator& allocator)
 			: name(allocator)
 			, tags(allocator)
-			, path(allocator)
 			, thumbnail(allocator)
 		{}
 
 		String name;
 		String tags;
-		String path;
 		String thumbnail;
+		i32 index = -1;
 		u32 version = 0;
 		bool root_install = false;
 		bool download_tried = false;
@@ -317,22 +371,47 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	}
 
 	void install(const MarketItem& item, const char* install_path) {
-		FileSystem& fs =  m_app.getEngine().getFileSystem();
-		StaticString<MAX_PATH> install_path_str = install_path;
-		m_download_thread.download(item.path.c_str(), [this, item, install_path_str](const OutputMemoryStream& blob){
-			FileSystem& fs = m_app.getEngine().getFileSystem();
-			if (Path::hasExtension(item.path.c_str(), "zip")) {
-				makePath(install_path_str);
-				if (!extract(blob, install_path_str, fs, m_app.getAllocator())) {
-					logError("Failed to extract ", item.path.c_str(), " to ", install_path_str);
+		LuaWrapper::DebugGuard guard(m_state);
+
+		int tt = lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_list_ref);
+		int qq = lua_rawgeti(m_state, -1, item.index + 1);
+		if (lua_getfield(m_state, -1, "path") == LUA_TSTRING) {
+			FileSystem& fs =  m_app.getEngine().getFileSystem();
+			StaticString<MAX_PATH> install_path_str = install_path;
+			String url(lua_tostring(m_state, -1), m_app.getAllocator());
+			m_download_thread.download(url.c_str(), [this, item, install_path_str, url = static_cast<String&&>(url)](const OutputMemoryStream& blob){
+				FileSystem& fs = m_app.getEngine().getFileSystem();
+				if (Path::hasExtension(url.c_str(), "zip")) {
+					makePath(install_path_str);
+					if (!extract(blob, install_path_str, fs, m_app.getAllocator())) {
+						logError("Failed to extract ", url.c_str(), " to ", install_path_str);
+					}
 				}
+				else {
+					if (!fs.saveContentSync(Path(install_path_str), blob)) {
+						logError("Failed to save ", url.c_str(), " as ", install_path_str);
+					}
+				}
+			});
+		}
+		else {
+			if (lua_getfield(m_state, -2, "install") == LUA_TFUNCTION) {
+				lua_remove(m_state, -2);
+				lua_remove(m_state, -2);
+				lua_pushstring(m_state, install_path);
+				int status = lua_resume(m_state, nullptr, 1);
+				if (status != LUA_YIELD && status != LUA_OK) {
+					logError(lua_tostring(m_state, -1));
+				}
+				return;
+//				LuaWrapper::pcall(m_state, 1, 0);
 			}
 			else {
-				if (!fs.saveContentSync(Path(install_path_str), blob)) {
-					logError("Failed to save ", item.path.c_str(), " as ", install_path_str);
-				}
+				logError("No path or callback found");
 			}
-		});
+			lua_pop(m_state, 1);
+		}
+		lua_pop(m_state, 1);
 	}
 
 	void onSettingsLoaded() override {
@@ -436,6 +515,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	
 	const char* getName() const override { return "market"; }
 	
+	lua_State* m_state;
+	i32 m_list_ref = -1;
 	StudioApp& m_app;
 	Array<MarketItem> m_items;
 	i32 m_item_to_install = -1;
