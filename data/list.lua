@@ -204,5 +204,11 @@ return {
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.png",
         root_install = true
+    },
+    {
+        name = "Halloween bits",
+        tags = "model, lowpoly",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.png"
     }
 }
