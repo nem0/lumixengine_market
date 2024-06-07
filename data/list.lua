@@ -210,5 +210,11 @@ return {
         tags = "model, lowpoly",
         path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.zip",
         thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.png"
+    },
+    {
+        name = "Dungeon Remastered Pack ",
+        tags = "model, lowpoly",
+        path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.zip",
+        thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.png"
     }
 }
