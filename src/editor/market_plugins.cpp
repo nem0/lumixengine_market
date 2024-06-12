@@ -1,4 +1,5 @@
 #define LUMIX_NO_CUSTOM_CRT
+#include <string.h>
 #include "core/allocator.h"
 #include "core/log.h"
 #include "core/os.h"
@@ -379,7 +380,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			FileSystem& fs =  m_app.getEngine().getFileSystem();
 			StaticString<MAX_PATH> install_path_str = install_path;
 			String url(lua_tostring(m_state, -1), m_app.getAllocator());
-			m_download_thread.download(url.c_str(), [this, item, install_path_str, url](const OutputMemoryStream& blob){
+			m_download_thread.download(url.c_str(), [this, install_path_str, url](const OutputMemoryStream& blob){
 				FileSystem& fs = m_app.getEngine().getFileSystem();
 				if (Path::hasExtension(url.c_str(), "zip")) {
 					makePath(install_path_str);
