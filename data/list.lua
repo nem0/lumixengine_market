@@ -167,6 +167,12 @@ return {
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.zip",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.png"
 	},
+	{
+		name = "Kenney UI",
+		tags = "ui",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.zip",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.png"
+	},
     {
         name = "Ultimate Stylized Nature",
         tags = "model",
