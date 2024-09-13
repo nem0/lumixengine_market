@@ -231,6 +231,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 		m_app.addWindowAction(&m_toggle_ui);
 		m_download_thread.create("market_download", true);
+		m_app.getSettings().registerPtr("is_marketplace_open", &m_is_open);
 	}
 
 	~MarketPlugin() {
@@ -413,14 +414,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			lua_pop(m_state, 1);
 		}
 		lua_pop(m_state, 3);
-	}
-
-	void onSettingsLoaded() override {
-		m_is_open = m_app.getSettings().getValue(Settings::GLOBAL, "is_marketplace_open", false);
-	}
-
-	void onBeforeSettingsSaved() override {
-		m_app.getSettings().setValue(Settings::GLOBAL, "is_marketplace_open", m_is_open);
 	}
 
 	void processFinishedJobs() {
