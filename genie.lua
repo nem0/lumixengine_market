@@ -96,7 +96,6 @@ project "market"
 	}
 	defines { "BUILDING_MARKET" }
 	links { "engine" }
-	useLua()
 	defaultConfigurations()
 
 linkPlugin("market")
