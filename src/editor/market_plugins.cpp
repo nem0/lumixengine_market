@@ -16,7 +16,8 @@
 #include "editor/world_editor.h"
 #include "engine/engine.h"
 #include "engine/file_system.h"
-#include "engine/lua_wrapper.h"
+#include "lua/lua_script_system.h"
+#include "lua/lua_wrapper.h"
 
 #include "imgui/imgui.h"
 #include "miniz.h"
@@ -219,9 +220,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		, m_download_thread(app, app.getAllocator())
 	{
 		createLuaAPI();
-		m_toggle_ui.init("Marketplace", "Toggle marketplace UI", "marketplace", "", Action::IMGUI_PRIORITY);
-		m_toggle_ui.func.bind<&MarketPlugin::toggleUI>(this);
-		m_toggle_ui.is_selected.bind<&MarketPlugin::isOpen>(this);
 
 		const char* base_path = m_app.getEngine().getFileSystem().getBasePath();
 		if (!os::makePath(StaticString<MAX_PATH>(base_path, "/.lumix/.market_cache"))) {
@@ -229,8 +227,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		}
 		getList(false);
 
-		m_app.addWindowAction(&m_toggle_ui);
 		m_download_thread.create("market_download", true);
+		m_app.getSettings().registerOption("market_open", &m_is_open);
 	}
 
 	~MarketPlugin() {
@@ -238,7 +236,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_download_thread.m_finished = true;
 		m_download_thread.m_semaphore.signal();
 		m_download_thread.destroy();
-		m_app.removeAction(&m_toggle_ui);
 	}
 
 	static int LUA_nextFile(lua_State* L) {
@@ -288,16 +285,18 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		return lua_yield(L, 1);
 	}
 
+	lua_State* getLuaState() {
+		auto* lua_system = (LuaScriptSystem*)m_app.getEngine().getSystemManager().getSystem("lua_script");
+		return lua_system->getState();
+	}
+
 	void createLuaAPI() {
-		m_state = lua_newthread(m_app.getEngine().getState());
+		m_state = lua_newthread(getLuaState());
 		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "downloadAndExtract", &LUA_downloadAndExtract);
 		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "createFileIterator", &LUA_createFileIterator);
 		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "destroyFileIterator", &LuaWrapper::wrap<&os::destroyFileIterator>);
 		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "nextFile", &LUA_nextFile);
 	}
-
-	void toggleUI() { m_is_open = !m_is_open; }
-	bool isOpen() const { return m_is_open; }
 
 	void getList(bool force) {
 		if (force) {
@@ -415,14 +414,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		lua_pop(m_state, 3);
 	}
 
-	void onSettingsLoaded() override {
-		m_is_open = m_app.getSettings().getValue(Settings::GLOBAL, "is_marketplace_open", false);
-	}
-
-	void onBeforeSettingsSaved() override {
-		m_app.getSettings().setValue(Settings::GLOBAL, "is_marketplace_open", m_is_open);
-	}
-
 	void processFinishedJobs() {
 		while (DownloadThread::Job* job = m_download_thread.popFinishedJob()) {
 			if (!job->canceled) {
@@ -525,7 +516,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	char m_filter[64] = "";
 	bool m_is_open = false;
 	u32 m_total_jobs = 0;
-	Action m_toggle_ui;
+	Action m_toggle_ui{"Marketplace", "Marketplace - toggle UI", "marketplace_toggle_ui", nullptr, Action::WINDOW};
 	DownloadThread m_download_thread;
 };
 

@@ -94,9 +94,9 @@ project "market"
 		"src/**.h",
 		"genie.lua"
 	}
+    includedirs { "../../external/luau/include" }
 	defines { "BUILDING_MARKET" }
 	links { "engine" }
-	useLua()
 	defaultConfigurations()
 
 linkPlugin("market")
