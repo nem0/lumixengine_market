@@ -430,6 +430,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 	void onGUI() override {
 		processFinishedJobs();
+		if (m_app.checkShortcut(m_toggle_ui, true)) m_is_open = !m_is_open;
 		if (!m_is_open) return;
 
 		RenderInterface* ri = m_app.getRenderInterface();
