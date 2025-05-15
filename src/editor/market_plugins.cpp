@@ -14,6 +14,7 @@
 #include "editor/studio_app.h"
 #include "editor/utils.h"
 #include "editor/world_editor.h"
+#include "engine/component_uid.h"
 #include "engine/engine.h"
 #include "engine/file_system.h"
 #include "lua/lua_script_system.h"
@@ -62,9 +63,9 @@ struct DownloadThread : Thread {
 			m_semaphore.wait();
 			m_mutex.enter();
 			if (!m_jobs.empty()) {
-				Job* job = m_jobs.back();
-				m_current_job = job;
+				UniquePtr<Job> job = m_jobs.back().move();
 				m_jobs.pop();
+				m_current_job = job.get();
 				const bool canceled = job->canceled;
 				m_mutex.exit();
 				if (!canceled) {
@@ -72,7 +73,7 @@ struct DownloadThread : Thread {
 				}
 				m_mutex.enter();
 				m_current_job = nullptr;
-				m_finished_jobs.emplace(job);
+				m_finished_jobs.emplace(job.move());
 			}
 			m_mutex.exit();
 		}
@@ -120,10 +121,10 @@ struct DownloadThread : Thread {
 	void cancelAll() {
 		MutexGuard guard(m_mutex);
 		if (m_current_job) m_current_job->canceled = true;
-		for (Job* job : m_jobs) {
+		for (const UniquePtr<Job>& job : m_jobs) {
 			job->canceled = true;
 		}
-		for (Job* job : m_finished_jobs) {
+		for (const UniquePtr<Job>& job : m_finished_jobs) {
 			job->canceled = true;
 		}
 	}
@@ -140,33 +141,33 @@ struct DownloadThread : Thread {
 			F func;
 		};
 
-		MyJob* job = LUMIX_NEW(m_app.getAllocator(), MyJob)(f, m_app.getAllocator());
+		UniquePtr<MyJob> job = UniquePtr<MyJob>::create(m_app.getAllocator(), f, m_app.getAllocator());
 		job->url = url;
 		job->use_cache = true;
-		pushJob(job);
+		pushJob(job.move());
 	}
 
-	void pushJob(Job* job) {
+	void pushJob(UniquePtr<Job>&& job) {
 		++m_to_do_count;
 		MutexGuard guard(m_mutex);
-		m_jobs.push(job);
+		m_jobs.push(job.move());
 		m_semaphore.signal();
 	}
 
-	Job* popFinishedJob() {
+	UniquePtr<Job> popFinishedJob() {
 		MutexGuard guard(m_mutex);
-		if (m_finished_jobs.empty()) return nullptr;
+		if (m_finished_jobs.empty()) return {};
 		--m_to_do_count;
-		Job* job = m_finished_jobs.back();
+		UniquePtr<Job> job = m_finished_jobs.back().move();
 		m_finished_jobs.pop();
-		return job;
+		return job.move();
 	}
 
 	StudioApp& m_app;
 	Semaphore m_semaphore;
 	Mutex m_mutex;
-	Array<Job*> m_jobs;
-	Array<Job*> m_finished_jobs;
+	Array<UniquePtr<Job>> m_jobs;
+	Array<UniquePtr<Job>> m_finished_jobs;
 	Job* m_current_job = nullptr;
 	bool m_finished = false;
 	u32 m_to_do_count = 0;
@@ -229,9 +230,12 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 		m_download_thread.create("market_download", true);
 		m_app.getSettings().registerOption("market_open", &m_is_open);
+
+		m_app.addPlugin((StudioApp::GUIPlugin&)*this);
 	}
 
 	~MarketPlugin() {
+		m_app.removePlugin((StudioApp::GUIPlugin&)*this);
 		m_download_thread.cancelAll();
 		m_download_thread.m_finished = true;
 		m_download_thread.m_semaphore.signal();
@@ -317,6 +321,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			m_list_ref = LuaWrapper::createRef(L);
 
 			const int n = (int)lua_objlen(L, -1);
+			m_items.reserve(n);
 			for (int i = 0; i < n; ++i) {
 				MarketItem& item = m_items.emplace(m_app.getAllocator());
 				lua_rawgeti(L, -1, i + 1);
@@ -415,7 +420,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	}
 
 	void processFinishedJobs() {
-		while (DownloadThread::Job* job = m_download_thread.popFinishedJob()) {
+		while (UniquePtr<DownloadThread::Job> job = m_download_thread.popFinishedJob()) {
 			if (!job->canceled) {
 				if (job->failed_download) {
 					logError("Failed to download ", job->url.c_str());
@@ -424,7 +429,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 					job->finished();
 				}
 			}
-			LUMIX_DELETE(m_app.getAllocator(), job);
 		}
 	}
 
@@ -521,13 +525,33 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	DownloadThread m_download_thread;
 };
 
+struct MarketHelper : StudioApp::IPlugin {
+	MarketHelper(StudioApp& app)
+		: m_app(app)
+	{
+		m_plugin.create(app);
+		app.addPlugin(*m_plugin.get());
+	}
+	
+	~MarketHelper() {
+		m_app.removePlugin(*m_plugin.get());
+	}
+
+	const char* getName() const override { return "market"; }
+	void init() override {}
+	bool showGizmo(struct WorldView& view, ComponentUID) override { return false; }
+
+	StudioApp& m_app;
+	Local<MarketPlugin> m_plugin;
+};
+
 LUMIX_STUDIO_ENTRY(market) {
 	PROFILE_FUNCTION();
 	WorldEditor& editor = app.getWorldEditor();
 
-	auto* plugin = LUMIX_NEW(editor.getAllocator(), MarketPlugin)(app);
-	app.addPlugin(*plugin);
-	return nullptr;
+	auto* plugin = LUMIX_NEW(editor.getAllocator(), MarketHelper)(app);
+	
+	return plugin;
 }
 
 } // namespace Lumix
