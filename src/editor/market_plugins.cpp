@@ -530,13 +530,8 @@ struct MarketHelper : StudioApp::IPlugin {
 		: m_app(app)
 	{
 		m_plugin.create(app);
-		app.addPlugin(*m_plugin.get());
 	}
 	
-	~MarketHelper() {
-		m_app.removePlugin(*m_plugin.get());
-	}
-
 	const char* getName() const override { return "market"; }
 	void init() override {}
 	bool showGizmo(struct WorldView& view, ComponentUID) override { return false; }
@@ -550,7 +545,6 @@ LUMIX_STUDIO_ENTRY(market) {
 	WorldEditor& editor = app.getWorldEditor();
 
 	auto* plugin = LUMIX_NEW(editor.getAllocator(), MarketHelper)(app);
-	
 	return plugin;
 }
 
