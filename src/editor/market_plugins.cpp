@@ -468,7 +468,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 						stbi_uc* pixels = stbi_load_from_memory(blob.data(), (int)blob.size(), &w, &h, nullptr, 4);
 						if (pixels) {;
 							RenderInterface* ri = m_app.getRenderInterface();
-							item.texture = ri->createTexture("market_thumbnail", pixels, w, h);;
+							item.texture = ri->createTexture("market_thumbnail", pixels, w, h, gpu::TextureFormat::SRGBA);
 							free(pixels);
 						}
 					});
