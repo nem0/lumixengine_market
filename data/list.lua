@@ -228,5 +228,11 @@ return {
 		tags = "model, lowpoly, trees, nature",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/assetquest/Free_Forest_Kit.zip",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/assetquest/Free_Forest_Kit.png"
+	},
+	{
+		name = "Space base bits",
+		tags = "model, lowpoly",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/space_base_bits.zip",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/space_base_bits.png"
 	}
 }
