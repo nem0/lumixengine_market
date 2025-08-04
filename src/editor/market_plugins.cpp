@@ -521,7 +521,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	char m_filter[64] = "";
 	bool m_is_open = false;
 	u32 m_total_jobs = 0;
-	Action m_toggle_ui{"Marketplace", "Marketplace - toggle UI", "marketplace_toggle_ui", nullptr, Action::WINDOW};
+	Action m_toggle_ui{"Marketplace", "Marketplace", "Toggle UI", "marketplace_toggle_ui", nullptr, Action::WINDOW};
 	DownloadThread m_download_thread;
 };
 
