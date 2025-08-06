@@ -101,5 +101,5 @@ if plugin "market" then
 	}
 	includedirs { "../../external/luau/include" }
 	defines { "BUILDING_MARKET" }
-	links { "engine" }
+	dynamic_link_plugin { "engine" }
 end
