@@ -459,7 +459,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			if (ImGui::BeginChild("items")) {
 				FileSystem& fs =  m_app.getEngine().getFileSystem();		
 				const float width = ImGui::GetContentRegionAvail().x;
-				u32 columns = maximum(1, u32((width + 128) / 256));
+				u32 columns = maximum(1, u32(width / 256));
 				
 				u32 i = 0;
 				for (MarketItem& item : m_items) {
