@@ -12,6 +12,7 @@
 #include "editor/render_interface.h"
 #include "editor/settings.h"
 #include "editor/studio_app.h"
+#include "editor/text_filter.h"
 #include "editor/utils.h"
 #include "editor/world_editor.h"
 #include "engine/component_uid.h"
@@ -451,60 +452,64 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			}
 			if (ImGui::Button("Refresh")) getList(true);
 			ImGui::SameLine();
-			if (ImGuiEx::IconButton(ICON_FA_TIMES, "Clear filter")) m_filter[0] = '\0';
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(-1);
-			ImGui::InputTextWithHint("##filter", "Filter", m_filter, sizeof(m_filter), ImGuiInputTextFlags_AutoSelectAll);
-			FileSystem& fs =  m_app.getEngine().getFileSystem();		
-			const float width = ImGui::GetContentRegionAvail().x;
-			u32 columns = maximum(1, u32((width + 128) / 256));
-			
-			u32 i = 0;
-			for (MarketItem& item : m_items) {
-				if (m_filter[0] && findInsensitive(item.name.c_str(), m_filter) == nullptr && findInsensitive(item.tags.c_str(), m_filter) == nullptr) continue;
-				if (!item.texture && !item.download_tried) {
-					item.download_tried = true;
-					m_download_thread.download(item.thumbnail.c_str(), [this, &item](const OutputMemoryStream& blob){
-						int w, h;
-						stbi_uc* pixels = stbi_load_from_memory(blob.data(), (int)blob.size(), &w, &h, nullptr, 4);
-						if (pixels) {;
-							RenderInterface* ri = m_app.getRenderInterface();
-							item.texture = ri->createTexture("market_thumbnail", pixels, w, h, gpu::TextureFormat::SRGBA);
-							free(pixels);
-						}
-					});
-				}
-				
-				if (i % columns != 0) ImGui::SameLine();
-				ImGui::BeginGroup();
-				ImGui::PushID(&item);
-				ImVec2 img_size(256, 256);
-				ImVec2 tl = ImGui::GetCursorPos();
-				if (item.texture) 
-					ImGui::Image(item.texture, img_size);
-				else 
-					ImGuiEx::Rect(img_size.x, img_size.y, 0);
-				ImVec2 text_size = ImGui::CalcTextSize(item.name.c_str());
-				ImVec2 pos = ImGui::GetCursorPos();
-				pos.x += (256 - text_size.x) * 0.5f;
-				ImGui::SetCursorPos(pos);
-				ImGui::TextUnformatted(item.name.c_str());
-				
-				ImGui::SetCursorPos(tl);
-				if (ImGuiEx::IconButton(ICON_FA_DOWNLOAD, "Download & Install")) {
-					if (item.root_install) {
-						install(item, "");
-					}
-					else {
-						m_show_install_path = true;
-						m_item_to_install = i32(&item - m_items.begin());
-					}
-				}
 
-				ImGui::PopID();
-				ImGui::EndGroup();
-				++i;
+			m_filter.gui("Search", -1, ImGui::IsWindowAppearing(), nullptr, false);
+			ImGui::Separator();
+
+			if (ImGui::BeginChild("items")) {
+				FileSystem& fs =  m_app.getEngine().getFileSystem();		
+				const float width = ImGui::GetContentRegionAvail().x;
+				u32 columns = maximum(1, u32((width + 128) / 256));
+				
+				u32 i = 0;
+				for (MarketItem& item : m_items) {
+					if (!m_filter.pass(item.name.c_str()) && !m_filter.pass(item.tags.c_str())) continue;
+					if (!item.texture && !item.download_tried) {
+						item.download_tried = true;
+						m_download_thread.download(item.thumbnail.c_str(), [this, &item](const OutputMemoryStream& blob){
+							int w, h;
+							stbi_uc* pixels = stbi_load_from_memory(blob.data(), (int)blob.size(), &w, &h, nullptr, 4);
+							if (pixels) {;
+								RenderInterface* ri = m_app.getRenderInterface();
+								item.texture = ri->createTexture("market_thumbnail", pixels, w, h, gpu::TextureFormat::SRGBA);
+								free(pixels);
+							}
+						});
+					}
+					
+					if (i % columns != 0) ImGui::SameLine();
+					else ImGui::NewLine();
+					ImGui::BeginGroup();
+					ImGui::PushID(&item);
+					ImVec2 img_size(256, 256);
+					ImVec2 tl = ImGui::GetCursorPos();
+					if (item.texture) 
+						ImGui::Image(item.texture, img_size);
+					else 
+						ImGuiEx::Rect(img_size.x, img_size.y, 0);
+					ImVec2 text_size = ImGui::CalcTextSize(item.name.c_str());
+					ImVec2 pos = ImGui::GetCursorPos();
+					pos.x += (256 - text_size.x) * 0.5f;
+					ImGui::SetCursorPos(pos);
+					ImGui::TextUnformatted(item.name.c_str());
+					
+					ImGui::SetCursorPos(tl);
+					if (ImGuiEx::IconButton(ICON_FA_DOWNLOAD, "Download & Install")) {
+						if (item.root_install) {
+							install(item, "");
+						}
+						else {
+							m_show_install_path = true;
+							m_item_to_install = i32(&item - m_items.begin());
+						}
+					}
+
+					ImGui::PopID();
+					ImGui::EndGroup();
+					++i;
+				}
 			}
+			ImGui::EndChild();
 		}
 		DirSelector& ds = m_app.getDirSelector();
 		if (ds.gui("Select install path", &m_show_install_path)) install(m_items[m_item_to_install], ds.getDir());
@@ -519,7 +524,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	Array<MarketItem> m_items;
 	i32 m_item_to_install = -1;
 	bool m_show_install_path = false;
-	char m_filter[64] = "";
+	TextFilter m_filter;
 	bool m_is_open = false;
 	u32 m_total_jobs = 0;
 	Action m_toggle_ui{"Marketplace", "Marketplace", "Toggle UI", "marketplace_toggle_ui", nullptr, Action::WINDOW};
