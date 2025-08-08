@@ -19,6 +19,7 @@
 #include "engine/file_system.h"
 #include "lua/lua_script_system.h"
 #include "lua/lua_wrapper.h"
+#include "renderer/gpu/gpu.h"
 
 #include "imgui/imgui.h"
 #include "miniz.h"
