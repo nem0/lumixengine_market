@@ -175,12 +175,13 @@ struct DownloadThread : Thread {
 	u32 m_to_do_count = 0;
 };
 
-static bool extract(Span<const u8> zip, const char* export_dir, FileSystem& fs, IAllocator& allocator) {
+static bool extract(Span<const u8> zip, const char* export_dir, StudioApp& app, IAllocator& allocator) {
 	mz_zip_archive archive = {};
 	if (!mz_zip_reader_init_mem(&archive, zip.begin(), zip.length(), 0)) return false;
 
 	const mz_uint count = mz_zip_reader_get_num_files(&archive);
 	bool res = true;
+	FileSystem& fs = app.getEngine().getFileSystem();
 	for (u32 i = 0; i < count; ++i) {
 		mz_zip_archive_file_stat stat;
 		if (!mz_zip_reader_file_stat(&archive, i, &stat)) {
@@ -188,7 +189,7 @@ static bool extract(Span<const u8> zip, const char* export_dir, FileSystem& fs, 
 			return false;
 		}
 		if (stat.m_is_directory) {
-			StaticString<MAX_PATH> path(fs.getBasePath(), export_dir, "/", stat.m_filename);
+			StaticString<MAX_PATH> path(app.getProjectDir(), export_dir, "/", stat.m_filename);
 			if (!os::makePath(path)) {
 				logError("Failed to create ", path);
 				res = false;
@@ -223,17 +224,17 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		, m_download_thread(app, app.getAllocator())
 	{
 		createLuaAPI();
+		m_app.addPlugin((StudioApp::GUIPlugin&)*this);
+		m_app.getSettings().registerOption("market_open", &m_is_open);
+	}
 
-		const char* base_path = m_app.getEngine().getFileSystem().getBasePath();
-		if (!os::makePath(StaticString<MAX_PATH>(base_path, "/.lumix/.market_cache"))) {
+	void setProjectDir(const char* project_dir) override {
+		if (!os::makePath(StaticString<MAX_PATH>(project_dir, "/.lumix/.market_cache"))) {
 			logError("Failed to create .lumix/.market_cache");
 		}
 		getList(false);
 
 		m_download_thread.create("market_download", true);
-		m_app.getSettings().registerOption("market_open", &m_is_open);
-
-		m_app.addPlugin((StudioApp::GUIPlugin&)*this);
 	}
 
 	~MarketPlugin() {
@@ -263,7 +264,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		}
 		MarketPlugin* plugin = LuaWrapper::checkArg<MarketPlugin*>(L, upvalue_index);
 
-		StaticString<MAX_PATH> path(plugin->m_app.getEngine().getFileSystem().getBasePath(), dir);
+		StaticString<MAX_PATH> path(plugin->m_app.getProjectDir(), dir);
 		LuaWrapper::push(L, os::createFileIterator(path, plugin->m_app.getAllocator()));
 		return 1;
 	}
@@ -281,7 +282,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 
 		plugin->m_download_thread.download(url, [L, dir, plugin](OutputMemoryStream& blob){
 			plugin->makePath(dir);
-			bool res = extract(blob, dir, plugin->m_app.getEngine().getFileSystem(), plugin->m_app.getAllocator());
+			bool res = extract(blob, dir, plugin->m_app, plugin->m_app.getAllocator());
 			lua_pushboolean(L, res);
 			int status = lua_resume(L, nullptr, 1);
 			if (status != LUA_YIELD && status != LUA_OK) {
@@ -370,8 +371,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	};
 
 	void makePath(const char* path) {
-		FileSystem& fs = m_app.getEngine().getFileSystem();
-		StaticString<MAX_PATH> fullpath(fs.getBasePath(), "/", path);
+		StaticString<MAX_PATH> fullpath(m_app.getProjectDir(), "/", path);
 		if (!os::makePath(fullpath)) {
 			logError("Failed to create ", fullpath);
 		}
@@ -390,7 +390,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 				FileSystem& fs = m_app.getEngine().getFileSystem();
 				if (Path::hasExtension(url.c_str(), "zip")) {
 					makePath(install_path_str);
-					if (!extract(blob, install_path_str, fs, m_app.getAllocator())) {
+					if (!extract(blob, install_path_str, m_app, m_app.getAllocator())) {
 						logError("Failed to extract ", url.c_str(), " to ", install_path_str);
 					}
 				}
