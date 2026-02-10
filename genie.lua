@@ -1,5 +1,3 @@
-local cfg_file
-
 function createTextureMeta(path)
 	local mp = io.open(path, "w")
 	mp:write("srgb = true")
@@ -22,18 +20,20 @@ local package_configs = {
 	["kenney_retro-urban-kit"] = { center = true },
 	["kenney_space-kit"] = { center = true },
 	["kenney_particle-pack"] = { 
-		ignore_list = { "Black background", "Unity samples", "Rotated" }
+		ignore_list = { "Black background", "Unity samples", "Rotated" },
+		name = "Particle pack",
+		tags = "particles, textures"
 	}
 }
 
-function centerMeshes(package_name)
-	local t = package_configs[package_name]
+function centerMeshes(basename)
+	local t = package_configs[basename]
 	if t == nil then return false end
 	return t.center == true
 end
 
-function ignorePath(path, package_name)
-	local t = package_configs[package_name]
+function ignorePath(path, basename)
+	local t = package_configs[basename]
 	if t == nil then return false end
 	if t.ignore_list == nil then return false end
 
@@ -46,11 +46,24 @@ function ignorePath(path, package_name)
 	return false
 end
 
+function getPackageName(basename)
+	local t = package_configs[basename]
+	if t == nil then return basename end
+	if t.name == nil then return basename end
+	return t.name
+end
+
+function getPackageTags(basename)
+	local t = package_configs[basename]
+	if t == nil then return basename end
+	if t.tags == nil then return basename end
+	return t.tags
+end
+
 -- put original zip file from kenney in scripts/ folder
 -- run ./genie kenney
 -- it creates zip and png file in plugins/market/data/kenney/*
--- and scripts/list.lua
--- edit and copy scripts/list.lua to plugins/market/data/kenney/list.lua
+-- and updates plugins/market/data/kenney/list.lua
 function repackage_kenney(file)
 	printf("repacking " .. file .. "...")
 	local basename = path.getbasename(file)
@@ -67,7 +80,7 @@ function repackage_kenney(file)
 	if #fbx_files == 0 and #png_files == 0 then
 		printf("Warning: No FBX or PNG files in " .. basename .. ", skipped.")
 		os.chdir("../..") 
-		return
+		return nil
 	end
 
 	os.mkdir(repacked_dir)
@@ -103,23 +116,59 @@ function repackage_kenney(file)
 
 	os.chdir("../..")
 
-	cfg_file:write("\t{\n")
-	cfg_file:write('\t\tname = "' .. basename .. '",\n')
-	cfg_file:write('\t\ttags = "model, lowpoly",\n')
-	cfg_file:write('\t\tpath = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/' .. basename .. '.zip",\n')
-	cfg_file:write('\t\tthumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/' .. basename .. '.png"\n')
-	cfg_file:write("\t},\n")
+	return {
+		name = getPackageName(basename),
+		tags = getPackageTags(basename),
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/" .. basename .. ".zip",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/" .. basename .. ".png"
+	}
 end
 
 newaction {
 	trigger     = "kenney",
 	description = "Repackage Kenney's assets for Lumix Engine",
 	execute     = function()
+		local list_path = "../plugins/market/data/list.lua"
+		local existing_packages = {}
+		if os.isfile(list_path) then
+			local f = io.open(list_path, "r")
+			local content = f:read("*all")
+			f:close()
+			local fn = load(content)
+			if fn then
+				existing_packages = fn()
+			end
+		end
+		local new_packages = {}
 		local files = os.matchfiles("*.zip")
-		cfg_file = io.open("list.lua", "w")
-		cfg_file:write("{\n")
 		for _, v in pairs(files) do
-			repackage_kenney(v)
+			local pkg = repackage_kenney(v)
+			if pkg then table.insert(new_packages, pkg) end
+		end
+		local cfg_file = io.open(list_path, "w")
+		cfg_file:write("return {\n")
+		for _, pkg in ipairs(existing_packages) do
+			cfg_file:write("\t{\n")
+			for k, v in pairs(pkg) do
+				if type(v) == "string" then
+					cfg_file:write('\t\t' .. k .. ' = "' .. tostring(v) .. '",\n')
+				else
+					cfg_file:write('\t\t' .. k .. ' = ' .. tostring(v) .. ',\n')
+				end
+			end
+			cfg_file:write("\t},\n")
+		end
+		cfg_file:write("-- new packages")
+		for _, pkg in ipairs(new_packages) do
+			cfg_file:write("\t{\n")
+			for k, v in pairs(pkg) do
+				if type(v) == "string" then
+					cfg_file:write('\t\t' .. k .. ' = "' .. tostring(v) .. '",\n')
+				else
+					cfg_file:write('\t\t' .. k .. ' = ' .. tostring(v) .. ',\n')
+				end
+			end
+			cfg_file:write("\t},\n")
 		end
 		cfg_file:write("}\n")
 		cfg_file:close()
