@@ -210,6 +210,24 @@ return {
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.zip",
 	},
 	{
+		name = "Zombie apocalypse kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/zombie_apocalypse_kit.jpg",
+		tags = "model, lowpoly",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/zombie_apocalypse_kit.zip",
+	},
+	{
+		name = "Ultimate fantasy RTS",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_fantasy_rts.jpg",
+		tags = "model, lowpoly",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_fantasy_rts.zip",
+	},
+	{
+		name = "Cube world",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/cube_world.jpg",
+		tags = "model, lowpoly",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/cube_world.zip",
+	},
+	{
 		name = "Vehicle Sample",
 		root_install = true,
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.png",
