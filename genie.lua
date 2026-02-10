@@ -116,8 +116,25 @@ function repackage_kenney(file)
 
 	os.chdir("../..")
 
+	local name_no_prefix = basename:gsub("^kenney[_%-]", "")
+	local name = name_no_prefix
+		:gsub("_", " ") -- replace underscores with spaces, e.g., "castle_kit" -> "castle kit"
+		:gsub("%-", " ") -- replace hyphens with spaces, e.g., "retro-urban" -> "retro urban"
+		:gsub("(%l)(%u)", "%1 %2") -- add space between lowercase and uppercase letters, e.g., "MyAsset" -> "My Asset"
+		:gsub("(%d+)", function(d) return " " .. d end) -- separate numbers, e.g., "Asset2" -> "Asset 2"
+		:gsub("%s+", " ") -- replace multiple spaces with a single space, e.g., "Castle   kit" -> "Castle kit"
+		:gsub("^%s+", "") -- remove leading whitespace, e.g., "  Castle kit" -> "Castle kit"
+		:gsub("%s+$", "") -- remove trailing whitespace, e.g., "Castle kit " -> "Castle kit"
+		:gsub("^%l", string.upper) -- capitalize the first letter, e.g., "castle kit" -> "Castle kit"
+	
+	-- Capitalize the first letter after each space, e.g., "Castle kit" -> "Castle Kit"
+	name = name:gsub("(%s)(%l)", function(a, b)
+		if a == " " then return a .. b:upper() end
+		return a .. b
+	end)
+
 	return {
-		name = getPackageName(basename),
+		name = name,
 		tags = getPackageTags(basename),
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/" .. basename .. ".zip",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/" .. basename .. ".png"
@@ -158,7 +175,7 @@ newaction {
 			end
 			cfg_file:write("\t},\n")
 		end
-		cfg_file:write("-- new packages")
+		cfg_file:write("-- new packages\n")
 		for _, pkg in ipairs(new_packages) do
 			cfg_file:write("\t{\n")
 			for k, v in pairs(pkg) do
