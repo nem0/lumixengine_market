@@ -1,244 +1,298 @@
 return {
 	{
 		name = "Particle pack",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_particle-pack.png",
 		tags = "textures, particles",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_particle-pack.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_particle-pack.png"
-	},	
+	},
 	{
 		name = "Animated characters 1",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-1.png",
 		tags = "model, lowpoly, animation",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-1.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-1.png"
 	},
 	{
 		name = "Animated characters 3",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-3.png",
 		tags = "model, lowpoly, animation",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-3.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-3.png"
 	},
 	{
 		name = "Blaster kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blaster-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blaster-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blaster-kit.png"
 	},
 	{
 		name = "Blocky characters",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blocky-characters.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blocky-characters.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_blocky-characters.png"
 	},
 	{
 		name = "Car kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_car-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_car-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_car-kit.png"
 	},
 	{
 		name = "Castle kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_castle-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_castle-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_castle-kit.png"
 	},
 	{
 		name = "City kit commercial",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-commercial.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-commercial.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-commercial.png"
 	},
 	{
 		name = "City kit roads",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-roads.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-roads.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-roads.png"
 	},
 	{
 		name = "City kit suburban",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-suburban.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-suburban.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-suburban.png"
 	},
 	{
 		name = "Conveyor kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_conveyor-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_conveyor-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_conveyor-kit.png"
 	},
 	{
 		name = "Fantasy town kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_fantasy-town-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_fantasy-town-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_fantasy-town-kit.png"
 	},
 	{
 		name = "Food kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_food-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_food-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_food-kit.png"
 	},
 	{
 		name = "Furniture kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_furniture-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_furniture-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_furniture-kit.png"
 	},
 	{
 		name = "Graveyard kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_graveyard-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_graveyard-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_graveyard-kit.png"
 	},
 	{
 		name = "Hexagon kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_hexagon-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_hexagon-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_hexagon-kit.png"
 	},
 	{
 		name = "Holiday kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_holiday-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_holiday-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_holiday-kit.png"
 	},
 	{
 		name = "Marble kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_marble-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_marble-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_marble-kit.png"
 	},
 	{
 		name = "Mini dungeon",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-dungeon.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-dungeon.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-dungeon.png"
 	},
 	{
 		name = "Mini skate",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-skate.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-skate.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-skate.png"
 	},
 	{
 		name = "Minigolf kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_minigolf-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_minigolf-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_minigolf-kit.png"
 	},
 	{
 		name = "Nature kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_nature-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_nature-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_nature-kit.png"
 	},
 	{
 		name = "Pirate kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_pirate-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_pirate-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_pirate-kit.png"
 	},
 	{
 		name = "Platformer kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_platformer-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_platformer-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_platformer-kit.png"
 	},
 	{
 		name = "Racing kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_racing-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_racing-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_racing-kit.png"
 	},
 	{
 		name = "Retro medieval kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-medieval-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-medieval-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-medieval-kit.png"
 	},
 	{
 		name = "Retro urban kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-urban-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-urban-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_retro-urban-kit.png"
 	},
 	{
 		name = "Space kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_space-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_space-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_space-kit.png"
 	},
 	{
 		name = "Tower defense kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.png"
 	},
 	{
 		name = "Kenney UI",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.png",
 		tags = "ui",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.png"
 	},
 	{
 		name = "Ultimate Stylized Nature",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.png",
 		tags = "model",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.png",
 	},
 	{
 		name = "Ultimate Modular Ruins",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.png",
 		tags = "model",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.png",
 	},
 	{
 		name = "Ultimate Modular Sci-Fi",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_scifi.png",
 		tags = "model",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_scifi.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_scifi.png",
 	},
 	{
 		name = "Platformer Pack",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/platformer_pack.png",
 	},
 	{
 		name = "Vehicle Sample",
+		root_install = true,
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.png",
 		tags = "scene, model, script",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/vehicle_sample.png",
-		root_install = true
 	},
 	{
 		name = "Portal effect",
+		root_install = true,
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.png",
 		tags = "scene, model, shader, material",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/lumix/portal.png",
-		root_install = true
 	},
 	{
 		name = "Halloween bits",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.png"
 	},
 	{
 		name = "Dungeon Remastered Pack ",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.png"
 	},
 	{
 		name = "Free Forest Kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/assetquest/Free_Forest_Kit.png",
 		tags = "model, lowpoly, trees, nature",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/assetquest/Free_Forest_Kit.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/assetquest/Free_Forest_Kit.png"
 	},
 	{
 		name = "Space base bits",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/space_base_bits.png",
 		tags = "model, lowpoly",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/space_base_bits.zip",
-		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/space_base_bits.png"
-	}
+	},
+	{
+		name = "Building Kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_building-kit.png",
+		tags = "kenney_building-kit",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_building-kit.zip",
+	},
+	{
+		name = "City Kit Industrial 1. 0",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-industrial_1.0.png",
+		tags = "kenney_city-kit-industrial_1.0",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_city-kit-industrial_1.0.zip",
+	},
+	{
+		name = "Mini Arcade",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-arcade.png",
+		tags = "kenney_mini-arcade",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-arcade.zip",
+	},
+	{
+		name = "Mini Arena",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-arena.png",
+		tags = "kenney_mini-arena",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-arena.zip",
+	},
+	{
+		name = "Mini Characters",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-characters.png",
+		tags = "kenney_mini-characters",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-characters.zip",
+	},
+	{
+		name = "Mini Market",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-market.png",
+		tags = "kenney_mini-market",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_mini-market.zip",
+	},
+	{
+		name = "Modular Dungeon Kit 1. 0",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_modular-dungeon-kit_1.0.png",
+		tags = "kenney_modular-dungeon-kit_1.0",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_modular-dungeon-kit_1.0.zip",
+	},
+	{
+		name = "Prototype Kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_prototype-kit.png",
+		tags = "kenney_prototype-kit",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_prototype-kit.zip",
+	},
+	{
+		name = "Survival Kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_survival-kit.png",
+		tags = "kenney_survival-kit",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_survival-kit.zip",
+	},
 }
