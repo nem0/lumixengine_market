@@ -186,6 +186,12 @@ return {
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_stylized_nature.zip",
 	},
 	{
+		name = "Toon shooter game kit",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/toon_shooter_game_kit.jpg",
+		tags = "model",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/toon_shooter_game_kit.zip",
+	},
+	{
 		name = "Ultimate Modular Ruins",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/quaternius/ultimate_modular_ruins.png",
 		tags = "model",
