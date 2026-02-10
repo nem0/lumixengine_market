@@ -12,7 +12,39 @@ function createFBXMeta(path)
 	mp:close()
 end
 
-local center_packages = { "kenney_city-kit-roads", "kenney_castle-kit",  "kenney_pirate-kit", "kenney_racing-kit", "kenney_retro-urban-kit", "kenney_space-kit" }
+local package_configs = {
+	["kenney_city-kit-roads"] = {
+		center = true
+	},
+	["kenney_castle-kit"] = { center = true },
+	["kenney_pirate-kit"] = { center = true },
+	["kenney_racing-kit"] = { center = true },
+	["kenney_retro-urban-kit"] = { center = true },
+	["kenney_space-kit"] = { center = true },
+	["kenney_particle-pack"] = { 
+		ignore_list = { "Black background", "Unity samples", "Rotated" }
+	}
+}
+
+function centerMeshes(package_name)
+	local t = package_configs[package_name]
+	if t == nil then return false end
+	return t.center == true
+end
+
+function ignorePath(path, package_name)
+	local t = package_configs[package_name]
+	if t == nil then return false end
+	if t.ignore_list == nil then return false end
+
+	for _, v in ipairs(t.ignore_list) do
+		if string.find(path, v) then
+			return true
+		end
+	end
+
+	return false
+end
 
 -- put original zip file from kenney in scripts/ folder
 -- run ./genie kenney
@@ -29,22 +61,25 @@ function repackage_kenney(file)
 
 	local repacked_dir = "../../repacked/" .. basename .. "/";
 
-	local files = os.matchfiles("**.fbx")
+	local fbx_files = os.matchfiles("**.fbx")
+	local png_files = os.matchfiles("**.png")
 	
-	if #files == 0 then
-		printf("Warning: No FBX files in " .. basename .. ", skipped.")
+	if #fbx_files == 0 and #png_files == 0 then
+		printf("Warning: No FBX or PNG files in " .. basename .. ", skipped.")
 		os.chdir("../..") 
 		return
 	end
 
 	os.mkdir(repacked_dir)
 
-	local center_meshes = table.contains(center_packages, basename)
+	local center_meshes = centerMeshes(basename)
 
-	for _, v in pairs(files) do
-		os.copyfile(v, repacked_dir .. path.getbasename(v) .. ".fbx")
-		if center_meshes then
-			createFBXMeta(repacked_dir .. path.getbasename(v) .. ".fbx.meta")
+	for _, v in pairs(fbx_files) do
+		if not ignorePath(v) then
+			os.copyfile(v, repacked_dir .. path.getbasename(v) .. ".fbx")
+			if center_meshes then
+				createFBXMeta(repacked_dir .. path.getbasename(v) .. ".fbx.meta")
+			end
 		end
 	end
 
@@ -56,9 +91,8 @@ function repackage_kenney(file)
 	os.rmdir("Topdown")
 	os.rmdir("Previews")
 
-	local files = os.matchfiles("**.png")
-	for _, v in pairs(files) do
-		if v ~= "Preview.png" and v ~= "Sample.png" then 
+	for _, v in pairs(png_files) do
+		if v ~= "Preview.png" and v ~= "Sample.png" and not ignorePath(v) then 
 			os.copyfile(v, repacked_dir .. path.getbasename(v) .. ".png")
 			createTextureMeta(repacked_dir .. path.getbasename(v) .. ".png.meta")
 		end

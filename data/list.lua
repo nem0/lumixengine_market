@@ -1,5 +1,11 @@
 return {
 	{
+		name = "Particle pack",
+		tags = "textures, particles",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_particle-pack.zip",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_particle-pack.png"
+	},	
+	{
 		name = "Animated characters 1",
 		tags = "model, lowpoly, animation",
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_animated-characters-1.zip",
