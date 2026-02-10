@@ -224,6 +224,12 @@ return {
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/HalloweenBits.zip",
 	},
 	{
+		name = "Medieval hexagon pack",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/medieval_hexagon_pack.png",
+		tags = "model, lowpoly",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/medieval_hexagon_pack.zip",
+	},
+	{
 		name = "Dungeon Remastered Pack ",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kaykit/dugeon_remastered.png",
 		tags = "model, lowpoly",
