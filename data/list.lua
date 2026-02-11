@@ -174,6 +174,12 @@ return {
 		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_tower-defense-kit.zip",
 	},
 	{
+		name = "Kenney Fantasy UI borders",
+		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_fantasy-ui-borders.png",
+		tags = "ui",
+		path = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_fantasy-ui-borders.zip",
+	},
+	{
 		name = "Kenney UI",
 		thumbnail = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/kenney/kenney_ui.png",
 		tags = "ui",
