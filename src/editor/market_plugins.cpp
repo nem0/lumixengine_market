@@ -9,6 +9,7 @@
 #include "core/string.h"
 #include "core/sync.h"
 #include "core/thread.h"
+#include "core/tokenizer.h"
 #include "editor/render_interface.h"
 #include "editor/settings.h"
 #include "editor/studio_app.h"
@@ -18,8 +19,6 @@
 #include "engine/component_uid.h"
 #include "engine/engine.h"
 #include "engine/file_system.h"
-#include "lua/lua_script_system.h"
-#include "lua/lua_wrapper.h"
 #include "renderer/gpu/gpu.h"
 
 #include "imgui/imgui.h"
@@ -31,7 +30,7 @@
 
 namespace Lumix {
 
-static const char* LIST_URL = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/list.lua";
+static const char* LIST_URL = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/list.txt";
 
 struct DownloadThread : Thread {
 	struct Job {
@@ -223,7 +222,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		, m_items(app.getAllocator())
 		, m_download_thread(app, app.getAllocator())
 	{
-		createLuaAPI();
 		m_app.addPlugin((StudioApp::GUIPlugin&)*this);
 		m_app.getSettings().registerOption("market_open", &m_is_open);
 	}
@@ -245,109 +243,78 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 		m_download_thread.destroy();
 	}
 
-	static int LUA_nextFile(lua_State* L) {
-		os::FileIterator* iter = LuaWrapper::checkArg<os::FileIterator*>(L, 1);
-		os::FileInfo info;
-		if (!os::getNextFile(iter, &info)) return 0;
 
-		LuaWrapper::push(L, info.is_directory);
-		LuaWrapper::push(L, info.filename);
-		return 2;
+	static bool consumeString(Tokenizer& tokenizer, String& value) {
+		Tokenizer::Token token = tokenizer.tryNextToken();
+		if (token.type != Tokenizer::Token::STRING) return false;
+		value = token.value;
+		return true;
 	}
 
-	static int LUA_createFileIterator(lua_State* L) {
-		const char* dir = LuaWrapper::checkArg<const char*>(L, 1);
-		int upvalue_index = lua_upvalueindex(1);
-		if (!LuaWrapper::isType<MarketPlugin*>(L, upvalue_index)) {
-			ASSERT(false);
-			luaL_error(L, "Invalid Lua closure");
-		}
-		MarketPlugin* plugin = LuaWrapper::checkArg<MarketPlugin*>(L, upvalue_index);
+	bool parseList(StringView content) {
+		Tokenizer tokenizer(content, "market list");
 
-		StaticString<MAX_PATH> path(plugin->m_app.getProjectDir(), dir);
-		LuaWrapper::push(L, os::createFileIterator(path, plugin->m_app.getAllocator()));
-		return 1;
-	}
-
-	static int LUA_downloadAndExtract(lua_State* L) {
-		int upvalue_index = lua_upvalueindex(1);
-		if (!LuaWrapper::isType<MarketPlugin*>(L, upvalue_index)) {
-			ASSERT(false);
-			luaL_error(L, "Invalid Lua closure");
-		}
-		MarketPlugin* plugin = LuaWrapper::checkArg<MarketPlugin*>(L, upvalue_index);
-
-		const char* url = LuaWrapper::checkArg<const char*>(L, 1);
-		StaticString<MAX_PATH> dir = LuaWrapper::checkArg<const char*>(L, 2);
-
-		plugin->m_download_thread.download(url, [L, dir, plugin](OutputMemoryStream& blob){
-			plugin->makePath(dir);
-			bool res = extract(blob, dir, plugin->m_app, plugin->m_app.getAllocator());
-			lua_pushboolean(L, res);
-			int status = lua_resume(L, nullptr, 1);
-			if (status != LUA_YIELD && status != LUA_OK) {
-				logError(lua_tostring(L, -1));
+		for (i32 index = 0;; ++index) {
+			Tokenizer::Token token = tokenizer.tryNextToken();
+			if (token.type == Tokenizer::Token::EOF) break;
+			if (token.type != Tokenizer::Token::SYMBOL || !(token == "{")) {
+				logError("Invalid market list item, expected `{`, got `", token.value, "`");
+				return false;
 			}
-		});
-		return lua_yield(L, 1);
-	}
 
-	lua_State* getLuaState() {
-		auto* lua_system = (LuaScriptSystem*)m_app.getEngine().getSystemManager().getSystem("lua_script");
-		return lua_system->getState();
-	}
-
-	void createLuaAPI() {
-		m_state = lua_newthread(getLuaState());
-		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "downloadAndExtract", &LUA_downloadAndExtract);
-		LuaWrapper::createSystemClosure(m_state, "LumixMarket", this, "createFileIterator", &LUA_createFileIterator);
-		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "destroyFileIterator", &LuaWrapper::wrap<&os::destroyFileIterator>);
-		LuaWrapper::createSystemFunction(m_state, "LumixMarket", "nextFile", &LUA_nextFile);
+			MarketItem& item = m_items.emplace(m_app.getAllocator());
+			bool has_name = false, has_tags = false, has_thumbnail = false;
+			for (;;) {
+				token = tokenizer.tryNextToken();
+				if (token.type == Tokenizer::Token::SYMBOL && token == "}") break;
+				if (token.type != Tokenizer::Token::IDENTIFIER) {
+					logError("Invalid market list item field, expected identifier, got `", token.value, "`");
+					return false;
+				}
+				if (token == "name") {
+					if (!consumeString(tokenizer, item.name)) return false;
+					has_name = true;
+				}
+				else if (token == "tags") {
+					if (!consumeString(tokenizer, item.tags)) return false;
+					has_tags = true;
+				}
+				else if (token == "thumbnail") {
+					if (!consumeString(tokenizer, item.thumbnail)) return false;
+					has_thumbnail = true;
+				}
+				else if (token == "path") {
+					if (!consumeString(tokenizer, item.path)) return false;
+				}
+				else if (token == "root_install") {
+					item.root_install = true;
+				}
+				else {
+					logError("Unknown field in market list: ", token.value);
+					return false;
+				}
+			}
+			if (!has_name || !has_tags || !has_thumbnail) {
+				logError("Missing field in market list item ", index);
+				return false;
+			}
+			item.index = index;
+		}
+		return true;
 	}
 
 	void getList(bool force) {
 		if (force) {
 			FileSystem& fs = m_app.getEngine().getFileSystem();
 			const StableHash url_hash(LIST_URL);
-			fs.deleteFile(StaticString<MAX_PATH>(".lumix/.market_cache/", url_hash.getHashValue(), ".lua"));
+			fs.deleteFile(StaticString<MAX_PATH>(".lumix/.market_cache/", url_hash.getHashValue(), ".list"));
 		}
 		m_download_thread.cancelAll();
 		m_items.clear();
 		m_download_thread.download(LIST_URL, [&](const OutputMemoryStream& blob){
-			lua_State* L = m_state;
-			if (!LuaWrapper::execute(L, StringView((const char*)blob.data(), (u32)blob.size()), "market list", 1)) {
+			if (!parseList(StringView((const char*)blob.data(), (u32)blob.size()))) {
+				m_items.clear();
 				logError("Failed to parse market list");
-				return;
-			}
-
-			// TODO leak
-			m_list_ref = LuaWrapper::createRef(L);
-
-			const int n = (int)lua_objlen(L, -1);
-			m_items.reserve(n);
-			for (int i = 0; i < n; ++i) {
-				MarketItem& item = m_items.emplace(m_app.getAllocator());
-				lua_rawgeti(L, -1, i + 1);
-				char tmp[MAX_PATH];
-				#define CHECK(N) \
-					if (!LuaWrapper::checkStringField(L, -1, #N, Span(tmp))) { \
-						logError("Missing " #N " in market list in item ", i); \
-						m_items.pop(); \
-						lua_pop(L, 1); \
-						continue; \
-					} \
-					item.N = tmp; \
-	
-				CHECK(name);
-				CHECK(tags);
-				CHECK(thumbnail);
-				item.index = i;
-
-				LuaWrapper::getOptionalField(L, -1, "root_install", &item.root_install);
-				LuaWrapper::getOptionalField(L, -1, "version", &item.version);
-	
-				#undef CHECK
-				lua_pop(L, 1);
 			}
 		});
 	}
@@ -357,11 +324,13 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			: name(allocator)
 			, tags(allocator)
 			, thumbnail(allocator)
+			, path(allocator)
 		{}
 
 		String name;
 		String tags;
 		String thumbnail;
+		String path;
 		i32 index = -1;
 		u32 version = 0;
 		bool root_install = false;
@@ -378,14 +347,10 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	}
 
 	void install(const MarketItem& item, const char* install_path) {
-		LuaWrapper::DebugGuard guard(m_state);
-
-		int tt = lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_list_ref);
-		int qq = lua_rawgeti(m_state, -1, item.index + 1);
-		if (lua_getfield(m_state, -1, "path") == LUA_TSTRING) {
+		if (!item.path.empty()) {
 			FileSystem& fs =  m_app.getEngine().getFileSystem();
 			StaticString<MAX_PATH> install_path_str = install_path;
-			String url(lua_tostring(m_state, -1), m_app.getAllocator());
+			String url(item.path, m_app.getAllocator());
 			m_download_thread.download(url.c_str(), [this, install_path_str, url](const OutputMemoryStream& blob){
 				FileSystem& fs = m_app.getEngine().getFileSystem();
 				if (Path::hasExtension(url.c_str(), "zip")) {
@@ -402,23 +367,8 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 			});
 		}
 		else {
-			if (lua_getfield(m_state, -2, "install") == LUA_TFUNCTION) {
-				lua_remove(m_state, -2);
-				lua_remove(m_state, -2);
-				lua_pushstring(m_state, install_path);
-				int status = lua_resume(m_state, nullptr, 1);
-				if (status != LUA_YIELD && status != LUA_OK) {
-					logError(lua_tostring(m_state, -1));
-				}
-				return;
-//				LuaWrapper::pcall(m_state, 1, 0);
-			}
-			else {
-				logError("No path or callback found");
-			}
-			lua_pop(m_state, 1);
+			logError("No path found for market item");
 		}
-		lua_pop(m_state, 3);
 	}
 
 	void processFinishedJobs() {
@@ -518,8 +468,6 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	
 	const char* getName() const override { return "market"; }
 	
-	lua_State* m_state;
-	i32 m_list_ref = -1;
 	StudioApp& m_app;
 	Array<MarketItem> m_items;
 	i32 m_item_to_install = -1;
