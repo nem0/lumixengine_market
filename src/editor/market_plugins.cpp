@@ -28,6 +28,8 @@
 #include <urlmon.h>
 #pragma comment(lib, "urlmon.lib")
 
+#undef EOF
+
 namespace Lumix {
 
 static const char* LIST_URL = "https://raw.githubusercontent.com/nem0/lumixengine_market/master/data/list.txt";
@@ -347,7 +349,7 @@ struct MarketPlugin : StudioApp::GUIPlugin {
 	}
 
 	void install(const MarketItem& item, const char* install_path) {
-		if (!item.path.empty()) {
+		if (item.path.length() > 0) {
 			FileSystem& fs =  m_app.getEngine().getFileSystem();
 			StaticString<MAX_PATH> install_path_str = install_path;
 			String url(item.path, m_app.getAllocator());
